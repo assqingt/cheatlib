@@ -16,6 +16,8 @@
 # release
 *.exe
 *.dll
+*.zip
+*.rar
 
 # CMake
 CMakeFiles/
