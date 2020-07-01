@@ -99,7 +99,8 @@ void FuncUnhook(PFuncHookInfo ptInfo)
 /* 说明:  在Hook函数里调用源函数
  * 注意:  函数参数必须一致,否则会出现栈损
  *        只支持返回结构体的函数,否则会出现栈损
- *        如果结构体内的元素数量小于或等于2的话那么元素将分别保存在eax和edx里
+ *        如果结构体内的元素都是整型且数量小于或等于二的话
+ *        那么元素将分别保存在eax和edx里
  *        这个情况下不适合使用此宏,而是使用CallOrigFunc宏
  * 参数:  PFuncHookInfo ptInfo  - FuncHook函数的返回值
  *        void *pSaveStructAddr - 函数返回的结构体保存位置
