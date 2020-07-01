@@ -112,7 +112,7 @@ void FuncUnhook(PFuncHookInfo ptInfo)
 > // 将0x401510处的函数替换为定义好的test函数,一般在DllMain中调用   
 > ptFuncHookInfo = FuncHook((LPVOID)0x401510, (LPVOID)test);   
 > // 在Hook函数中调用源函数, 后面的参数需要一致. 此函数不支持返回结构体的函数   
-> CallOrigFunc(ptFuncHookInfo, paramer1, paramer2, ... ,paramerN);   
+> CallOrigFunc(ptFuncHookInfo, parameter1, parameter2, ... ,parameterN);   
 > // 获取源函数的返回值(调用完CallOrigFunc后)   
 > int ret = ptFuncHookInfo->last_return_value;   
 > // 撤销函数钩子并释放ptFuncHookInfo所占用的资源   
@@ -120,7 +120,7 @@ void FuncUnhook(PFuncHookInfo ptInfo)
 > // 在Hook函数中调用源函数, 那个函数的返回值是一个类似于st的结构体   
 > typedef struct _st{int a; int b; int c;} st, *pst;   
 > st s;   
-> CallOrigFunc_RetStruct(ptInfo, &s, paramer1, paramer2, ... ,paramerN)   
+> CallOrigFunc_RetStruct(ptInfo, &s, parameter1, parameter2, ... ,parameterN)   
 
 ## 编译
 ### 环境
