@@ -30,7 +30,7 @@ typedef struct _FuncHookInfo{
 	LPVOID pHookFuncAddr;	// Hook代码源地址
 	BYTE *pbOpCode;			// 机器码用于恢复现场
 	int last_return_value;	// CallOrigFunc源函数返回值(eax)
-	int last_return_2nd_value;	// 在返回值是有两个值的结构体时这里保存第二个元素(edx)
+	int last_return_2nd_value;	// 在返回值是有两个整型值的结构体时这里保存第二个元素(edx)
 } FuncHookInfo, *PFuncHookInfo;
 
 /* 说明:  将pOrigAddr处的函数直接替换为pHookAddr处的函数执行
@@ -81,9 +81,10 @@ void FuncUnhook(PFuncHookInfo ptInfo)
 	cheatlib_func_caller(ptInfo->pOrigFuncAddr, __VA_ARGS__);\
 	__asm__ __volatile__(\
 			"movl %%eax, %0;"\
-			"movl %%edx, %1;"\
-			::"m"(ptInfo->last_return_value),\
-			"m"(ptInfo->last_return_2nd_value): "eax", "edx");\
+			"movl %%edx, %1;"::\
+			"m"(ptInfo->last_return_value),\
+			"m"(ptInfo->last_return_2nd_value):\
+			"eax", "edx");\
 	JmpBuilder((BYTE*)ptInfo->pOrigFuncAddr, (DWORD)ptInfo->pHookFuncAddr, (DWORD)ptInfo->pOrigFuncAddr);\
 	VirtualProtect(ptInfo->pOrigFuncAddr, 5, PAGE_EXECUTE, &oldProtect);\
 } while(0);
@@ -101,7 +102,8 @@ void __attribute__((naked)) cheatlib_func_caller(LPVOID pOrigFuncAddr, ...)
 /* 说明:  在Hook函数里调用源函数
  * 注意:  函数参数必须一致,否则会出现栈损
  *        只支持返回结构体的函数,否则会出现栈损
- *        如果结构体内的元素数量小于或等于2的话那么元素将分别保存在eax和edx里
+ *        如果结构体内的元素都是整型且数量小于或等于二的话
+ *        那么元素将分别保存在eax和edx里
  *        这个情况下不适合使用此宏,而是使用CallOrigFunc宏
  * 参数:  PFuncHookInfo ptInfo  - FuncHook函数的返回值
  *        void *pSaveStructAddr - 函数返回的结构体保存位置
