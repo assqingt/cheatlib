@@ -26,11 +26,11 @@
 #include "cheatlib_utils.h"
 
 typedef struct _FuncHookInfo{
-	LPVOID pOrigFuncAddr;	// 代码源地址
-	LPVOID pHookFuncAddr;	// Hook代码源地址
-	BYTE *pbOpCode;			// 机器码用于恢复现场
-	int last_return_value;	// CallOrigFunc源函数返回值(eax)
-	int last_return_2nd_value;	// 在返回值是有两个整型值的结构体时这里保存第二个元素(edx)
+	LPVOID pOrigFuncAddr;       // 代码源地址
+	LPVOID pHookFuncAddr;       // Hook代码源地址
+	BYTE *pbOpCode;             // 机器码用于恢复现场
+	int last_return_value;      // CallOrigFunc源函数返回值(eax)
+	int last_return_2nd_value;  // 在返回值是有两个整型值的结构体时这里保存第二个元素(edx)
 } FuncHookInfo, *PFuncHookInfo;
 
 /* 说明:  将pOrigAddr处的函数直接替换为pHookAddr处的函数执行
@@ -74,20 +74,20 @@ void FuncUnhook(PFuncHookInfo ptInfo)
  *        不支持返回结构体的函数,否则可能会覆盖栈内的合法数据
  * 参数:  PFuncHookInfo ptInfo  - FuncHook函数的返回值
  *        ...                   - 函数参数 */
-#define CallOrigFunc(ptInfo, ...) do{\
-	DWORD oldProtect;\
-	VirtualProtect(ptInfo->pOrigFuncAddr, 5, PAGE_EXECUTE_READWRITE, &oldProtect);\
-	memcpy(ptInfo->pOrigFuncAddr, ptInfo->pbOpCode, 5);\
-	cheatlib_func_caller(ptInfo->pOrigFuncAddr, __VA_ARGS__);\
-	__asm__ __volatile__(\
-			"movl %%eax, %0;"\
-			"movl %%edx, %1;"::\
-			"m"(ptInfo->last_return_value),\
-			"m"(ptInfo->last_return_2nd_value):\
-			"eax", "edx");\
-	JmpBuilder((BYTE*)ptInfo->pOrigFuncAddr, (DWORD)ptInfo->pHookFuncAddr, (DWORD)ptInfo->pOrigFuncAddr);\
-	VirtualProtect(ptInfo->pOrigFuncAddr, 5, PAGE_EXECUTE, &oldProtect);\
-} while(0);
+#define CallOrigFunc(ptInfo, ...) do{ \
+	DWORD oldProtect; \
+	VirtualProtect(ptInfo->pOrigFuncAddr, 5, PAGE_EXECUTE_READWRITE, &oldProtect); \
+	memcpy(ptInfo->pOrigFuncAddr, ptInfo->pbOpCode, 5); \
+	cheatlib_func_caller(ptInfo->pOrigFuncAddr, __VA_ARGS__); \
+	__asm__ __volatile__( \
+			"movl %%eax, %0;" \
+			"movl %%edx, %1;":: \
+			"m"(ptInfo->last_return_value), \
+			"m"(ptInfo->last_return_2nd_value): \
+			"eax", "edx"); \
+	JmpBuilder((BYTE*)ptInfo->pOrigFuncAddr, (DWORD)ptInfo->pHookFuncAddr, (DWORD)ptInfo->pOrigFuncAddr); \
+	VirtualProtect(ptInfo->pOrigFuncAddr, 5, PAGE_EXECUTE, &oldProtect); \
+} while(0)
 
 void __attribute__((naked)) cheatlib_func_caller(LPVOID pOrigFuncAddr, ...)
 {
@@ -108,14 +108,14 @@ void __attribute__((naked)) cheatlib_func_caller(LPVOID pOrigFuncAddr, ...)
  * 参数:  PFuncHookInfo ptInfo  - FuncHook函数的返回值
  *        void *pSaveStructAddr - 函数返回的结构体保存位置
  *        ...                 - 函数参数 */
-#define CallOrigFunc_RetStruct(ptInfo, pSaveStructAddr, ...) do{\
-	DWORD oldProtect;\
-	VirtualProtect(ptInfo->pOrigFuncAddr, 5, PAGE_EXECUTE_READWRITE, &oldProtect);\
-	memcpy(ptInfo->pOrigFuncAddr, ptInfo->pbOpCode, 5);\
-	cheatlib_ret_struct_func_caller(pSaveStructAddr, ptInfo->pOrigFuncAddr, __VA_ARGS__);\
-	JmpBuilder((BYTE*)ptInfo->pOrigFuncAddr, (DWORD)ptInfo->pHookFuncAddr, (DWORD)ptInfo->pOrigFuncAddr);\
-	VirtualProtect(ptInfo->pOrigFuncAddr, 5, PAGE_EXECUTE, &oldProtect);\
-} while(0);
+#define CallOrigFunc_RetStruct(ptInfo, pSaveStructAddr, ...) do{ \
+	DWORD oldProtect; \
+	VirtualProtect(ptInfo->pOrigFuncAddr, 5, PAGE_EXECUTE_READWRITE, &oldProtect); \
+	memcpy(ptInfo->pOrigFuncAddr, ptInfo->pbOpCode, 5); \
+	cheatlib_ret_struct_func_caller(pSaveStructAddr, ptInfo->pOrigFuncAddr, __VA_ARGS__); \
+	JmpBuilder((BYTE*)ptInfo->pOrigFuncAddr, (DWORD)ptInfo->pHookFuncAddr, (DWORD)ptInfo->pOrigFuncAddr); \
+	VirtualProtect(ptInfo->pOrigFuncAddr, 5, PAGE_EXECUTE, &oldProtect); \
+} while(0)
 
 void __attribute__((naked)) cheatlib_ret_struct_func_caller(LPVOID pStructAddr, LPVOID pOrigFuncAddr, ...)
 {

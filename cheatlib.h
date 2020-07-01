@@ -26,30 +26,30 @@
 #include <windows.h>
 
 typedef struct _CheatLibRequiredAsmInfo{
-	BYTE *pbOpCode;		// 机器码
-	int iRequiredSize;	// jmp指令覆盖的指令总大小
-	int iFirstCmdSize;	// 注入点第一条指令的大小
+	BYTE *pbOpCode;     // 机器码
+	int iRequiredSize;  // jmp指令覆盖的指令总大小
+	int iFirstCmdSize;  // 注入点第一条指令的大小
 } CheatLibRequiredAsmInfo, *PCheatLibRequiredAsmInfo;
 
 typedef struct _CheatLibAsmEncodeInfo{
-	const char *pszAsmCode;		// 汇编代码
-	uint64_t u64Address;		// 汇编代码的所在地址
-	unsigned char *pbOpCode;	// 机器码
-	size_t nOpCodeSize;			// 机器码长度
-	size_t nCmdCount;			// 汇编指令数量
+	const char *pszAsmCode;     // 汇编代码
+	uint64_t u64Address;        // 汇编代码的所在地址
+	unsigned char *pbOpCode;    // 机器码
+	size_t nOpCodeSize;         // 机器码长度
+	size_t nCmdCount;           // 汇编指令数量
 } CheatLibAsmEncodeInfo, *PCheatLibAsmEncodeInfo;
 
 typedef struct _DllInjectionInfo{
-	HANDLE hProcess;			// 进程句柄
-	HANDLE hThread;				// 远程线程句柄
-	LPVOID pszLibFileRemote;	// dll文件路径字符串首地址
+	HANDLE hProcess;            // 进程句柄
+	HANDLE hThread;             // 远程线程句柄
+	LPVOID pszLibFileRemote;    // dll文件路径字符串首地址
 } DllInjectionInfo, *PDllInjectionInfo;
 
 typedef struct _CodeInjectionInfo{
-	HANDLE hProcess;							// 进程句柄
-	LPVOID pOrigAddr;							// 代码源地址
-	LPVOID pVirAddr;							// 申请的远程进程空间的首地址
-	PCheatLibRequiredAsmInfo ptRequiredAsmInfo;	// 记录原始代码信息用于恢复
+	HANDLE hProcess;                            // 进程句柄
+	LPVOID pOrigAddr;                           // 代码源地址
+	LPVOID pVirAddr;                            // 申请的远程进程空间的首地址
+	PCheatLibRequiredAsmInfo ptRequiredAsmInfo; // 记录原始代码信息用于恢复
 } CodeInjectionInfo, *PCodeInjectionInfo;
 
 /* 说明:    根据窗口标题获取进程句柄
